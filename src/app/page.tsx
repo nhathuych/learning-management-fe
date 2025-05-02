@@ -1,7 +1,17 @@
+import NonDashboardNavbar from '@/components/NonDashboardNavbar';
+import Landing from './(nondashboard)/Landing/page';
+import Footer from '@/components/Footer';
+
 export default function Home() {
   return (
-    <div>
-      <h1 className='text-yellow-300'>Learning Management</h1>
+    <div className='nondashboard-layout'>
+      <NonDashboardNavbar />
+
+      <main className='nondashboard-layout__main'>
+        <Landing />
+      </main>
+
+      <Footer />
     </div>
   );
 }
