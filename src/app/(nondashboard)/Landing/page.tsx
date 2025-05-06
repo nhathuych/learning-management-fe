@@ -1,6 +1,7 @@
 'use client'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCarousel } from '@/hooks/useCarousel'
+import { useGetCoursesQuery } from '@/state/api'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -42,6 +43,8 @@ const LoadingSkeleton = () => {
 
 const Landing = () => {
   const currentImage = useCarousel({ totalImages: 3 })
+  const { data: courses, isLoading, isError } = useGetCoursesQuery({})
+  console.log('courses:', courses)
 
   return (
     <motion.div
