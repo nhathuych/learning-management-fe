@@ -6,6 +6,7 @@ import { useCheckoutNavigation } from '@/hooks/useCheckoutNavigation'
 import { useUser } from '@clerk/nextjs'
 import CheckoutDetailsPage from './details'
 import PaymentPage from './payment'
+import CompletionPage from './completion'
 
 const CheckoutWizard = () => {
   const { isLoaded } = useUser()
@@ -20,7 +21,7 @@ const CheckoutWizard = () => {
       case 2:
         return <PaymentPage />
       case 3:
-        return '<CompletionPage />'
+        return <CompletionPage />
       default:
         return <CheckoutDetailsPage />
     }
