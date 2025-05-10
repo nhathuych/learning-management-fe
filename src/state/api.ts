@@ -57,6 +57,7 @@ export const api = createApi({
   reducerPath: "api",
   tagTypes: [Tags.Courses, Tags.Users],  // 👈 Step 1: define tag types for cache management
   endpoints: (build) => ({
+    // COURSES APIS
     getCourses: build.query<Course[], { category?: string }>({
       query: ({ category }) => ({
         url: 'courses',
@@ -70,6 +71,7 @@ export const api = createApi({
       providesTags: (result, error, id) => [{ type: Tags.Courses, id }],  // 👈 Step 2: assigns a per-item cache tag, allowing Redux to refetch only the affected course on update/delete
     }),
 
+    // USER CLERK API
     updateUser: build.mutation<User, Partial<User> & { userId: string }>({
       query: ({ userId, ...updatedUser }) => ({
         url: `users/clerk/${userId}`,
@@ -78,6 +80,23 @@ export const api = createApi({
       }),
       invalidatesTags: [Tags.Users],  // 👈 Step 3: invalidate user-related cache so that queries with `Tags.Users` are refetched after update
     }),
+
+    // TRANSACTION APIS
+    createStripePaymentIntent: build.mutation<{ clientSecret: string }, { amount: number }>({
+      query: ({ amount }) => ({
+        url: `transactions/stripe/payment-intent`,
+        method: 'POST',
+        body: { amount },
+      }),
+    }),
+
+    createTransaction: build.mutation<Transaction, Partial<Transaction>>({
+      query: (transaction) => ({
+        url: 'transactions/',
+        method: 'POST',
+        body: transaction,
+      })
+    })
   }),
 });
 
@@ -86,4 +105,6 @@ export const {
   useGetCoursesQuery,
   useGetCourseQuery,
   useUpdateUserMutation,
+  useCreateStripePaymentIntentMutation,
+  useCreateTransactionMutation,
 } = api;
