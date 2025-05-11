@@ -16,13 +16,13 @@ const AppSidebar = () => {
   const navLinks = {
     student: [
       { icon: BookOpen,  label: 'Courses',  href: '/user/courses' },
-      { icon: Briefcase, label: 'Billings', href: '/user/billing' },
+      { icon: Briefcase, label: 'Billings', href: '/user/billings' },
       { icon: User,      label: 'Profile',  href: '/user/profile' },
       { icon: Settings,  label: 'Settings', href: '/user/settings' },
     ],
     teacher: [
       { icon: BookOpen,   label: 'Courses',  href: '/teacher/courses' },
-      { icon: DollarSign, label: 'Billings', href: '/teacher/billing' },
+      { icon: DollarSign, label: 'Billings', href: '/teacher/billings' },
       { icon: User,       label: 'Profile',  href: '/teacher/profile' },
       { icon: Settings,   label: 'Settings', href: '/teacher/settings' },
     ],
