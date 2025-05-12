@@ -1,8 +1,8 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BaseQueryApi, FetchArgs } from "@reduxjs/toolkit/query";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { BaseQueryApi, FetchArgs } from '@reduxjs/toolkit/query';
 import { User } from '@clerk/nextjs/server';
 import { Clerk } from '@clerk/clerk-js';
-import { toast } from "sonner";
+import { toast } from 'sonner';
 
 enum Tags {
   Courses = 'Courses',
@@ -71,6 +71,29 @@ export const api = createApi({
       providesTags: (result, error, id) => [{ type: Tags.Courses, id }],  // 👈 Step 2: assigns a per-item cache tag, allowing Redux to refetch only the affected course on update/delete
     }),
 
+    createCourse: build.mutation<Course, { teacherId: string, teacherName: string }>({
+      query: (body) => ({
+        url: `courses`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: [Tags.Courses],
+    }),
+
+    updateCourse: build.mutation<Course, { courseId: string, formData: FormData }>({
+      query: ({ courseId, formData }) => ({
+        url: `courses/${courseId}`,
+        method: 'PUT',
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { courseId }) => [{type: Tags.Courses, id: courseId}],
+    }),
+
+    deleteCourse: build.mutation<{ message: string }, string>({
+      query: (courseId) => ({ url: `courses/${courseId}`, method: 'DELETE', }),
+      invalidatesTags: [Tags.Courses],
+    }),
+
     // USER CLERK API
     updateUser: build.mutation<User, Partial<User> & { userId: string }>({
       query: ({ userId, ...updatedUser }) => ({
@@ -100,7 +123,7 @@ export const api = createApi({
         method: 'POST',
         body: transaction,
       })
-    })
+    }),
   }),
 });
 
@@ -108,6 +131,9 @@ export const api = createApi({
 export const {
   useGetCoursesQuery,
   useGetCourseQuery,
+  useCreateCourseMutation,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation,
   useUpdateUserMutation,
   useGetTransactionsQuery,
   useCreateStripePaymentIntentMutation,
