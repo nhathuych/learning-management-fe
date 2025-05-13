@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 enum Tags {
   Courses = 'Courses',
   Users = 'Users',
+  UserCourseProgress = 'UserCourseProgress',
 };
 
 const customBaseQuery = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: any) => {
@@ -55,7 +56,7 @@ const customBaseQuery = async (args: string | FetchArgs, api: BaseQueryApi, extr
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
-  tagTypes: [Tags.Courses, Tags.Users],  // 👈 Step 1: define tag types for cache management
+  tagTypes: [Tags.Courses, Tags.Users, Tags.UserCourseProgress],  // 👈 Step 1: define tag types for cache management
   endpoints: (build) => ({
     // COURSES APIS
     getCourses: build.query<Course[], { category?: string }>({
@@ -124,6 +125,57 @@ export const api = createApi({
         body: transaction,
       })
     }),
+
+    // USER COURSE PROGRESS
+    getUserEnrolledCourses: build.query<Course[], string>({
+      query: (userId) => `users/course-progress/${userId}/enrolled-courses`,
+      providesTags: [Tags.Courses, Tags.UserCourseProgress],
+    }),
+
+    getUserCourseProgress: build.query<
+      UserCourseProgress,
+      { userId: string; courseId: string }
+    >({
+      query: ({ userId, courseId }) => `users/course-progress/${userId}/courses/${courseId}`,
+      providesTags: [Tags.UserCourseProgress],
+    }),
+
+    updateUserCourseProgress: build.mutation<
+      UserCourseProgress,
+      {
+        userId: string;
+        courseId: string;
+        progressData: {
+          sections: SectionProgress[];
+        };
+      }
+    >({
+      query: ({ userId, courseId, progressData }) => ({
+        url: `users/course-progress/${userId}/courses/${courseId}`,
+        method: "PUT",
+        body: progressData,
+      }),
+      invalidatesTags: [Tags.UserCourseProgress],
+      async onQueryStarted({ userId, courseId, progressData }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData(
+            "getUserCourseProgress",
+            { userId, courseId },
+            (draft) => {
+              Object.assign(draft, {
+                ...draft,
+                sections: progressData.sections,
+              });
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
   }),
 });
 
@@ -138,4 +190,7 @@ export const {
   useGetTransactionsQuery,
   useCreateStripePaymentIntentMutation,
   useCreateTransactionMutation,
+  useGetUserEnrolledCoursesQuery,
+  useGetUserCourseProgressQuery,
+  useUpdateUserCourseProgressMutation,
 } = api;

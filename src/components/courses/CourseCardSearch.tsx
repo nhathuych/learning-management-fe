@@ -9,7 +9,7 @@ const CourseCardSearch = ({ course, isSelected, onclick }: { course: Course, isS
     >
       <div className='course-card-search__image-container'>
         <Image
-          src={course.image || 'placeholder.png'}
+          src={course.image || '/placeholder.png'}
           alt={course.title}
           fill
           sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
