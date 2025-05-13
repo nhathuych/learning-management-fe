@@ -95,6 +95,23 @@ export const api = createApi({
       invalidatesTags: [Tags.Courses],
     }),
 
+    getUploadVideoUrl: build.mutation<
+      { uploadUrl: string; videoUrl: string },
+      {
+        courseId: string;
+        chapterId: string;
+        sectionId: string;
+        fileName: string;
+        fileType: string;
+      }
+    >({
+      query: ({ courseId, sectionId, chapterId, fileName, fileType }) => ({
+        url: `courses/${courseId}/sections/${sectionId}/chapters/${chapterId}/get-upload-url`,
+        method: 'POST',
+        body: { fileName, fileType },
+      }),
+    }),
+
     // USER CLERK API
     updateUser: build.mutation<User, Partial<User> & { userId: string }>({
       query: ({ userId, ...updatedUser }) => ({
@@ -183,6 +200,7 @@ export const api = createApi({
 export const {
   useGetCoursesQuery,
   useGetCourseQuery,
+  useGetUploadVideoUrlMutation,
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
